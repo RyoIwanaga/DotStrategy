@@ -1,0 +1,49 @@
+// Reversi 用の State
+class State : public boardgame::State
+{
+	// 状態の更新はしない。
+	// ゲームの状態の変更を、新しい状態を作ることで表現する
+	REU__PROPERTY_READONLY_PASS_REF(std::vector<int>, _board, Board);
+	REU__PROPERTY_READONLY(int, _width, Width);
+	REU__PROPERTY_READONLY(int, _height, Height);
+	REU__PROPERTY_READONLY(bool, _isUsedPass, IsUsedPass);
+
+public:
+	State(... 省略 ...
+	virtual ~State() {}
+
+	// 実装の必要あり
+	virtual void print(int depth = 0) override; 
+};
+
+class ActionPlace : public boardgame::Action
+{
+	
+	// 実装の必要あり
+	virtual void print(int depth = 0) override; 
+}
+
+// ゲームルールの実装
+class Reversi : public boardgame::BoardGame<State>
+{
+	// 現在の盤面から生成できる全ての盤面を返す様に実装する
+	// ゲームのルールを記述するメソッドで、ゲームツリーの内部で呼ばれる。
+	virtual std::vector<boardgame::Tree<State>*>* 
+		makeChildren(boardgame::Tree<State>* tree_p) override;
+
+    // 勝利者を決定する、関数です。
+	// AIの検索ルーチン内で呼ばれており、勝利できる場合は無限点（intの取りうる値の上限）
+	// を返す為、AIは勝利できる枝を見つけた場合、必ず勝利する手を指す様になる。
+	// 負ける手を見つけた場合は負の無限点（intの取りうる値の下限）を返すため、
+	// 負ける手を全力で回避するような手を指す。
+	virtual bool collectWinner(std::vector<int>* wins_p, State* state_p) override;
+
+	// 勝利する手を見つけていない場合に呼ばれる関数です。
+	// 盤面に点数をつける関数です。
+	virtual int scoreState(State& state, int player) override;
+};
+
+int main(void)
+{
+	
+}

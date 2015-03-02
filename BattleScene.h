@@ -10,9 +10,6 @@ namespace tb = tactics::battle;
 
 class BattleScene : public cocos2d::Layer
 {
-	CC_SYNTHESIZE(int, _hp, Hp);
-	CC_SYNTHESIZE(int, _hpMax, HpMax);
-
 	CC_SYNTHESIZE(int, _boardWidth, BoardWidh);
 	CC_SYNTHESIZE(int, _boardHeight, BoardHeight);
 

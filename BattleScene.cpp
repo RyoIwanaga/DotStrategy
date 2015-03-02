@@ -37,8 +37,6 @@ enum Z
 };
 
 BattleScene::BattleScene() :
-		_hp(10000),
-		_hpMax(10000),
 		_boardWidth(9),
 		_boardHeight(5),
 		_root(nullptr)

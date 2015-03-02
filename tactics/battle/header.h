@@ -18,6 +18,4 @@
 // cpp 11
 #include <functional>
 
-typedef std::vector<boardgame::Point> Path;
-
 #endif // tactics_battle__header_h

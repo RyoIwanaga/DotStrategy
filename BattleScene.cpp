@@ -164,7 +164,7 @@ bool BattleScene::init()
 		spriteUnit_p->setPosition(this->getPosition(unit_p->getPos()));
 		spriteUnit_p->setCascadeOpacityEnabled(true); // Apply child to opacity
 		this->addChild(spriteUnit_p, static_cast<int>(Z::UNIT)); // XXX ちゃんと　x older を使用すること
-		_spritesUnit.pushBack(spriteUnit_p); // PUSH
+		_listSpritesUnit.pushBack(spriteUnit_p); // PUSH
 
 		/*** Hp ***/
 
@@ -213,12 +213,12 @@ void BattleScene::syncState(const tactics::battle::State& state)
 	int i = 0;
 	for (auto unit_p : state.getListUnitp()) {
 		if (unit_p->isDead()) {
-			_spritesUnit.at(i)->setOpacity(0);
+			_listSpritesUnit.at(i)->setOpacity(0);
 		} else {
-			_spritesUnit.at(i)->setOpacity(255); // XXX
+			_listSpritesUnit.at(i)->setOpacity(255); // XXX
 			_listLoadingBarHp.at(i)->setPercent(unit_p->getHpParsent());
 		}
-		_spritesUnit.at(i)->setPosition(getPosition(
+		_listSpritesUnit.at(i)->setPosition(getPosition(
 				unit_p->getPos()));
 
 		i++;
@@ -364,7 +364,7 @@ void BattleScene::makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p)
 			}
 
 			this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(
-					listener_p, _spritesUnit.at(index)); // XXX
+					listener_p, _listSpritesUnit.at(index));
 
 
 		}
@@ -486,7 +486,7 @@ void BattleScene::makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p)
 		}
 
 		this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(
-				listener_p, _spritesUnit.at(index)); // XXX
+				listener_p, _listSpritesUnit.at(index));
 	}
 }
 
@@ -580,7 +580,7 @@ void BattleScene::mainAnimationMove(boardgame::Tree<tactics::battle::State>* tre
 		this->hundleTree(tree_p);
 	}
 	else {
-		_spritesUnit.at(indexUnit)->runAction(Sequence::create(
+		_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
 					MoveTo::create(ANIMATION_MOVE_SPEED, getPosition(path.at(indexPath))),
 					CallFunc::create([=]()
 					{
@@ -599,7 +599,7 @@ void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 		auto from = getPosition(path.back());
 		auto target = getPosition(pTarget);
 
-		_spritesUnit.at(indexUnit)->runAction(Sequence::create(
+		_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
 					MoveTo::create(ANIMATION_MOVE_SPEED, target),
 					CallFunc::create([this, damage, pTarget]
 					{
@@ -614,7 +614,7 @@ void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 	}
 	// move
 	else {
-		_spritesUnit.at(indexUnit)->runAction(Sequence::create(
+		_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
 					MoveTo::create(ANIMATION_MOVE_SPEED, getPosition(path.at(indexPath))),
 					CallFunc::create([=]()
 					{

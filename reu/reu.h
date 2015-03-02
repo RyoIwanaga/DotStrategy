@@ -1,5 +1,8 @@
-#ifndef util__util_h_
-#define util__util_h_
+/** Utility header
+ */
+
+#ifndef reu__reu_h_
+#define reu__reu_h_
 
 #include <vector>
 #include <set>
@@ -196,4 +199,5 @@ T min(const std::vector<T> &list)
 
 } // end of namespace reu /////////////////////////////////////////////////////
 
-#endif // util__util_h_
+#endif // reu__reu_h_
+

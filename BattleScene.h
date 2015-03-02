@@ -13,12 +13,13 @@ class BattleScene : public cocos2d::Layer
 	CC_SYNTHESIZE(int, _boardWidth, BoardWidh);
 	CC_SYNTHESIZE(int, _boardHeight, BoardHeight);
 
-	CC_SYNTHESIZE(cocos2d::Vector<cocos2d::Sprite*>, _spritesUnit, SpritesUnit);
+	CC_SYNTHESIZE(cocos2d::Vector<cocos2d::Sprite*>, _listSpritesUnit, ListSpritesUnit);
 	CC_SYNTHESIZE(cocos2d::Vector<cocos2d::ui::LoadingBar*>, _listLoadingBarHp, ListLoadingBarHp);
 	CC_SYNTHESIZE(cocos2d::Vector<cocos2d::Sprite*>, _listButtons, ListButtons);
 
-	// game
+	// game controller
 	CC_SYNTHESIZE_PASS_BY_REF(tactics::battle::Battle, _game, Game);
+	// root of game tree
 	CC_SYNTHESIZE(boardgame::Tree<tactics::battle::State>*, _root, Root);
 
 public:

@@ -72,42 +72,42 @@ bool BattleScene::init()
 	/*** Game ***/
 
 	// Make state
-	std::vector<tactics::battle::Unit*> units;
+	std::vector<tb::Unit*> units;
 
 	// player 0
-	units.push_back(new tactics::battle::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 0,
+	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 0,
 				boardgame::Point(0, 0)));
-	units.push_back(new tactics::battle::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
+	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
 				boardgame::Point(0, 1)));
-	units.push_back(new tactics::battle::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
+	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
 				boardgame::Point(0, 2)));
 
-	units.push_back(new tactics::battle::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 2)));
-	units.push_back(new tactics::battle::Unit(1, 130, 50, 4 ,5, 4, 8, 0,
+	units.push_back(new tb::Unit(1, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 3)));
-	units.push_back(new tactics::battle::Unit(2, 130, 50, 4 ,5, 4, 8, 0,
+	units.push_back(new tb::Unit(2, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 4)));
 
 	// player 2
-	units.push_back(new tactics::battle::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
+	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 2)));
-	units.push_back(new tactics::battle::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
+	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 3)));
-	units.push_back(new tactics::battle::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
+	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 4)));
 
-	units.push_back(new tactics::battle::Unit(2, 130, 50, 4 ,5, 4, 8, 1,
+	units.push_back(new tb::Unit(2, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 0)));
-	units.push_back(new tactics::battle::Unit(1, 130, 50, 4 ,5, 4, 8, 1,
+	units.push_back(new tb::Unit(1, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 1)));
-	units.push_back(new tactics::battle::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 2)));
 
-	auto state_p = new tactics::battle::State(2, _boardWidth, _boardHeight, units);
+	auto state_p = new tb::State(2, _boardWidth, _boardHeight, units);
 
 	// Make tree
-	_root = new boardgame::Tree<tactics::battle::State>(
+	_root = new boardgame::Tree<tb::State>(
 			state_p, &_game);
 
 	_game.playerAddHuman();
@@ -208,7 +208,7 @@ cocos2d::Vec2 BattleScene::addVec2Y(const cocos2d::Vec2 pos, float y)
 	return Vec2(pos.x, pos.y + y);
 }
 
-void BattleScene::syncState(const tactics::battle::State& state)
+void BattleScene::syncState(const tb::State& state)
 {
 	int i = 0;
 	for (auto unit_p : state.getListUnitp()) {
@@ -225,7 +225,7 @@ void BattleScene::syncState(const tactics::battle::State& state)
 	}
 }
 
-void BattleScene::hundleTree(boardgame::Tree<tactics::battle::State>* tree_p)
+void BattleScene::hundleTree(boardgame::Tree<tb::State>* tree_p)
 {
 	log("%s", __func__);
 	auto state_p = tree_p->getState_p();
@@ -531,7 +531,7 @@ void BattleScene::makeButtonAttackMeleeExecute(
 }
 
 
-void BattleScene::executeAction(boardgame::Tree<tactics::battle::State>* tree_p)
+void BattleScene::executeAction(boardgame::Tree<tb::State>* tree_p)
 {
 	log("%s", __func__);
 	this->RESET_buttons();
@@ -572,8 +572,8 @@ void BattleScene::executeAction(boardgame::Tree<tactics::battle::State>* tree_p)
 	}
 }
 
-void BattleScene::mainAnimationMove(boardgame::Tree<tactics::battle::State>* tree_p,
-			int indexUnit, const tactics::battle::Path& path,
+void BattleScene::mainAnimationMove(boardgame::Tree<tb::State>* tree_p,
+			int indexUnit, const tb::Path& path,
 			int indexPath) // = 1
 {
 	if (path.size() <= indexPath) {
@@ -625,7 +625,7 @@ void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 	}
 }
 
-void BattleScene::mainAnimationRange(boardgame::Tree<tactics::battle::State>* tree_p,
+void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 			int indexUnit, int indexTarget,
 			int damage, bool isDead,
 			const boardgame::Point pFrom,

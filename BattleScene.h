@@ -18,9 +18,9 @@ class BattleScene : public cocos2d::Layer
 	CC_SYNTHESIZE(cocos2d::Vector<cocos2d::Sprite*>, _listButtons, ListButtons);
 
 	// game controller
-	CC_SYNTHESIZE_PASS_BY_REF(tactics::battle::Battle, _game, Game);
+	CC_SYNTHESIZE_PASS_BY_REF(tb::Battle, _game, Game);
 	// root of game tree
-	CC_SYNTHESIZE(boardgame::Tree<tactics::battle::State>*, _root, Root);
+	CC_SYNTHESIZE(boardgame::Tree<tb::State>*, _root, Root);
 
 public:
 	CREATE_FUNC(BattleScene);
@@ -42,7 +42,7 @@ private:
 
 	/*** Game ***/
 
-	void syncState(const tactics::battle::State& state);
+	void syncState(const tb::State& state);
 	void hundleTree(boardgame::Tree<tb::State>* tree_p);
 
 	/*** Make button ***/
@@ -55,17 +55,17 @@ private:
 
 	/*** Execute Action ***/
 
-	void executeAction(boardgame::Tree<tactics::battle::State>* tree_p);
+	void executeAction(boardgame::Tree<tb::State>* tree_p);
 
 	/*** Animation ***/
 
-	void mainAnimationMove(boardgame::Tree<tactics::battle::State>* tree_p,
-			int indexUnit, const tactics::battle::Path& path, int indexPath = 1);
-	void mainAnimationMelee(boardgame::Tree<tactics::battle::State>* tree_p,
-			int indexUnit, int indexTarget, const tactics::battle::Path& path,
+	void mainAnimationMove(boardgame::Tree<tb::State>* tree_p,
+			int indexUnit, const tb::Path& path, int indexPath = 1);
+	void mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
+			int indexUnit, int indexTarget, const tb::Path& path,
 			int damage, bool isDead, boardgame::Point pTarget,
 			int indexPath = 1);
-	void mainAnimationRange(boardgame::Tree<tactics::battle::State>* tree_p,
+	void mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 			int indexUnit, int indexTarget,
 			int damage, bool isDead,
 			const boardgame::Point pFrom,

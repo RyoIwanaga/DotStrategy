@@ -40,10 +40,15 @@ private:
 	float getPositionY(int y);
 	cocos2d::Vec2 addVec2Y(const cocos2d::Vec2 pos, float y);
 
+
 	/*** Game ***/
 
+	/** Synchronize current tree state and state of this scene
+	 */
 	void syncState(const tb::State& state);
+
 	void hundleTree(boardgame::Tree<tb::State>* tree_p);
+	void RESET_buttons();
 
 	/*** Make button ***/
 
@@ -74,7 +79,6 @@ private:
 
 	void drawFloatDamage(int damage, const boardgame::Point& pos);
 
-	void RESET_buttons();
 };
 
 #endif // _Strategy__BattleScene_h_

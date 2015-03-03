@@ -8,13 +8,16 @@
 #include "Path.h"
 #include "action/actions.h"
 
-// TODO edit State copy constructor
-
 namespace tactics { 
 	namespace battle {
 
 class Battle : public boardgame::BoardGame<State>
 {
+public:
+	Battle() {}
+	virtual ~Battle() {}
+
+protected:
 	// OVERRIDE
 	virtual std::vector<boardgame::Tree<State>*>* 
 		makeChilds(boardgame::Tree<State>* tree_p); 						
@@ -22,7 +25,7 @@ class Battle : public boardgame::BoardGame<State>
 	virtual int scoreState(const State& state, int player);
 };
 
-/***** Function ******/
+/***** Function *****/
 
 /*** Collect move ***/
 

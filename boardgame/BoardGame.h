@@ -24,26 +24,23 @@
 
 namespace boardgame {
 
-/** Game rule class.
- *
- *  === Usage ===
- *
- *  class Reversi : public boardgame::BoardGame<StateReversi> 
- *  {
- *  public:
- *		virtual bool collectWinner(std::vector<int>* wins_p, StateReversi* state_p) override;
- *	private:
- *		virtual int scoreState(StateReversi& state, int player) override;
- *  };
+/** Game controller class.
  */
 template <class T> // State type
 class BoardGame 
 {
-public:
-	std::vector<Ai<T>*> listAi_p;							// DELETE elements on destruct
+	// DELETE elements on destruct
+	REU__PROPERTY_READONLY_PASS_REF(std::vector<Ai<T>*>, _listAi_p, ListAi_p);
 
+public:
 	BoardGame() {}
-	virtual ~BoardGame() {}
+	virtual ~BoardGame()
+	{
+		for (auto ai_p : _listAi_p) {
+			delete ai_p;
+		}
+	}
+
 	virtual void play(Tree<T>* tree_p);
 
 	/** Make child branches from current state. Please OVERRIDE
@@ -70,27 +67,27 @@ public:
 
 	void playerAddAi(int level)
 	{
-		this->listAi_p.push_back(new Ai<T>(level, *this));
+		this->_listAi_p.push_back(new Ai<T>(level, *this));
 	}
 
 	void playerAddHuman()
 	{
-		this->listAi_p.push_back(nullptr);
+		this->_listAi_p.push_back(nullptr);
 	}
 
 	void playerChangeToAi(int n, int level)
 	{
-		delete this->listAi_p[n];
-		this->listAi_p[n] = new Ai<T>(level, *this);
+		delete this->_listAi_p[n];
+		this->_listAi_p[n] = new Ai<T>(level, *this);
 	}
 
 	void playerChangeToHuman(int n)
 	{
-		delete this->listAi_p[n];
-		this->listAi_p[n] = nullptr;
+		delete this->_listAi_p[n];
+		this->_listAi_p[n] = nullptr;
 	}
 
-private:
+protected:
 	/** Return tree, player choose.
 	*/
 	virtual Tree<T>* hundleHuman(Tree<T>* tree_p);
@@ -138,10 +135,10 @@ void BoardGame<T>::play(Tree<T>* tree_p)
 			printf("win: %d\n", i);
 	}
 	// player
-	else if (listAi_p[player] == nullptr) {
+	else if (_listAi_p[player] == nullptr) {
 		play(hundleHuman(tree_p));
 	} else {
-		play(hundleAi(tree_p, *(listAi_p[player])));
+		play(hundleAi(tree_p, *(_listAi_p[player])));
 	}
 }
 

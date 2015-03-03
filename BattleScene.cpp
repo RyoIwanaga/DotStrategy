@@ -66,8 +66,9 @@ bool BattleScene::init()
 	/*** Music ***/
 
 	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.5);
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music/maounoshiro.mp3");
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music/maounoshiro.mp3");
+	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.9);
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("bm/Volatile Reaction.mp3");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Volatile Reaction.mp3");
 
 	/*** Game ***/
 
@@ -84,9 +85,9 @@ bool BattleScene::init()
 
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 2)));
-	units.push_back(new tb::Unit(1, 130, 50, 4 ,5, 4, 8, 0,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 3)));
-	units.push_back(new tb::Unit(2, 130, 50, 4 ,5, 4, 8, 0,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 4)));
 
 	// player 2
@@ -97,9 +98,9 @@ bool BattleScene::init()
 	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 4)));
 
-	units.push_back(new tb::Unit(2, 130, 50, 4 ,5, 4, 8, 1,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 0)));
-	units.push_back(new tb::Unit(1, 130, 50, 4 ,5, 4, 8, 1,
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 1)));
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(5, 2)));
@@ -240,6 +241,7 @@ void BattleScene::hundleTree(boardgame::Tree<tb::State>* tree_p)
 	tree_p->force();
 	if (tree_p->isTerminal()) {
 		log("%s game end", __func__);
+		SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Take a Chance.mp3");
 
 //		std::vector<int> wins;
 //		_game.collectWinner(&wins, *state_p);
@@ -247,14 +249,14 @@ void BattleScene::hundleTree(boardgame::Tree<tb::State>* tree_p)
 		// TODO
 	}
 	// human
-	else if (_game.listAi_p[player] == nullptr) {
+	else if (_game.getListAi_p().at(player) == nullptr) {
 		log("%s human", __func__);
 		makeButton(tree_p);
 	}
 	// ai
 	else {
 		log("%s ai", __func__);
-		auto index = _game.listAi_p[player]->choice(tree_p, player);
+		auto index = _game.getListAi_p().at(player)->choice(tree_p, player);
 		auto heir_p = tree_p->force()->at(index);
 
 		this->runAction(Sequence::create(
@@ -601,8 +603,12 @@ void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 
 		_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
 					MoveTo::create(ANIMATION_MOVE_SPEED, target),
-					CallFunc::create([this, damage, pTarget]
+					CallFunc::create([this, damage, pTarget, isDead]
 					{
+						SimpleAudioEngine::sharedEngine()->playEffect("se/straight_punch.mp3");
+						if (isDead) {
+							SimpleAudioEngine::sharedEngine()->playEffect("se/devil_groaning1.mp3");
+						}
 						this->drawFloatDamage(damage, pTarget);
 					}),
 					MoveTo::create(ANIMATION_MOVE_SPEED, from),
@@ -638,12 +644,21 @@ void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 	this->addChild(arrow);
 
 	arrow->runAction(Sequence::create(
+			CallFunc::create([]()
+			{
+				SimpleAudioEngine::sharedEngine()->playEffect("se/attack1.mp3");
+			}),
 			MoveTo::create(0.6, this->getPosition(pTarget)),
 			// REMOVE and draw damage
-			CallFuncN::create([this, damage, pTarget, tree_p](Ref* ref)
+			CallFuncN::create([this, damage, pTarget, tree_p, isDead](Ref* ref)
 			{
 				auto node = dynamic_cast<Node*>(ref);
 				node->removeFromParent();
+
+				SimpleAudioEngine::sharedEngine()->playEffect("se/damage1.mp3");
+				if (isDead) {
+					SimpleAudioEngine::sharedEngine()->playEffect("se/devil_groaning1.mp3");
+				}
 
 				// draw damage
 				this->drawFloatDamage(damage, pTarget);

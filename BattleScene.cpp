@@ -65,10 +65,10 @@ bool BattleScene::init()
 
 	/*** Music ***/
 
-	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.5);
+	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.9);
 	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.9);
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("bm/Volatile Reaction.mp3");
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Volatile Reaction.mp3");
+//	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("bm/Ouroboros.mp3");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Future Gladiator.mp3");
 
 	/*** Game ***/
 
@@ -111,7 +111,8 @@ bool BattleScene::init()
 	_root = new boardgame::Tree<tb::State>(
 			state_p, &_game);
 
-	_game.playerAddHuman();
+//	_game.playerAddHuman();
+	_game.playerAddAi(1);
 	_game.playerAddAi(1);
 
 	/*** Bg ***/

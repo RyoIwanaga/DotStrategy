@@ -1,6 +1,8 @@
 #include "../Battle.h"
 #include <cassert>
 
+namespace tb = tactics::battle;
+
 void TEST_collectPath()
 {
 	printf("TEST::Battle::collectPath\n");
@@ -16,20 +18,27 @@ void TEST_collectPath()
 
 void TEST_play()
 {
+	int width = 9;
+	int height = 5;
+
 	printf("TEST::Battle\n");
-	// make units neeed To DELETE
+	// make stone
 	std::vector<tactics::battle::Unit*> units;
 	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 3, 8, 0, 
 				boardgame::Point(0, 0)));
 	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 3, 8, 0, 
 				boardgame::Point(0, 3)));
 	units.push_back(new tactics::battle::UnitRanged(2, 100, 50, 4 ,5, 3, 10, 1, 
-				boardgame::Point(3, 3)));
+				boardgame::Point(8, 3)));
 	units.push_back(new tactics::battle::UnitRanged(2, 100, 50, 4 ,5, 3, 11, 1, 
-				boardgame::Point(1, 1)));
+				boardgame::Point(8, 1)));
+
+	// make stone
+	std::vector<tb::Floor> stones;
+	tb::Floor::collectRocks(&stones, width, height, 4);
 
 	// make state
-	auto state_p = new tactics::battle::State(2, 9, 5, units);
+	auto state_p = new tactics::battle::State(2, width, height, units, stones);
 //	state_p.print(2);
 
 	// make game rule

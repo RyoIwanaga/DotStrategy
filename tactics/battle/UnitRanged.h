@@ -27,9 +27,15 @@ public:
 
 	virtual int getDamageMelee() const
 	{
-		REU_DEBUG__PRINT("herf");
-		return _damage / 2;
+		return Unit::getDamageMelee() / 2;
 	}
+
+	virtual int getDamageRanged() const
+	{
+		return getDamageRandom();
+	}
+
+	/***** Predicate *****/
 
 	virtual bool isRanged() const
 	{

@@ -54,7 +54,7 @@ bool Unit::isNextToEnemy(const std::vector<Unit*>& units,
 	boardgame::collectNeighbor(&neighbors, this->getPos(), width, height);
 	for (auto neighbor : neighbors) {
 		for (auto unit_p : units) {
-			if (this->isEnemy(*unit_p) && unit_p->getPos() == neighbor) {
+			if (this->isAttackable(*unit_p) && unit_p->getPos() == neighbor) {
 				return true;
 			}
 		}

@@ -4,10 +4,13 @@ namespace tactics {
 	namespace battle {
 
 State::State(int playerMax, 
-		int width, int height, const std::vector<Unit*>& listUnitp) :
+		int width, int height, 
+		const std::vector<Unit*>& listUnitp,
+		const std::vector<Floor>& listFloor) :
 	boardgame::State(-1, playerMax),
 	_width(width),
-	_height(height)
+	_height(height),
+	_listFloor(listFloor)
 {
 	for (auto unit_p : listUnitp) {
 		_listUnitp.push_back(unit_p->clone());
@@ -22,7 +25,8 @@ State::State(const State& o) :
 	_width(o.getWidth()),
 	_height(o.getHeight()),
 	_listWait0(o.getListWait0()),
-	_listWait1(o.getListWait1())
+	_listWait1(o.getListWait1()),
+	_listFloor(o.getListFloor())
 {
 	for (auto unit_p : o.getListUnitp()) {
 		_listUnitp.push_back(unit_p->clone());
@@ -134,6 +138,20 @@ void State::print(int depth)
 		this->printDepth(depth);
 
 		for (int x = 0; x < _width; x++) {
+
+			// for floor
+			for (auto floor : _listFloor) {
+				if (floor.getPos() == boardgame::Point(x, y / 2)) {
+
+					if (reu::isEven(y)) {
+						printf("####");
+					} else {
+						printf("ROCK");
+					}
+
+					goto LOOP_END;
+				}
+			}
 
 			// for units
 			for (auto unit_p : _listUnitp) {

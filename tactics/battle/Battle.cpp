@@ -40,9 +40,13 @@ Battle::makeChilds(boardgame::Tree<State>* tree_p)
 
 	/***** Collect path *****/
 
-	// collect unit points as negative list
 	std::vector<boardgame::Point> negativePoints;
+	// collect unit points as negative list
 	collectUnitPos(&negativePoints, units);
+	// collect floor points as negative list
+	for (auto floor : state_p->getListFloor()) {
+		negativePoints.push_back(floor.getPos());
+	}
 
 	// collect!!
 	std::vector<Path> paths;
@@ -201,7 +205,7 @@ NEW_TreeAttackRanged(const State& state, int targetIndex)
 	auto newUnits = newState_p->getListUnitp();
 
 	// shoot
-	int damage = state.getActiveUnit().getDamage();
+	int damage = state.getActiveUnit().getDamageRanged();
 	bool isDead = newUnits.at(activeUnitIndex)->UPDATE_attack(
 			newUnits.at(targetIndex), damage);
 

@@ -3,6 +3,7 @@
 
 #include "header.h"
 #include "Unit.h"
+#include "Floor.h"
 
 namespace tactics { 
 	namespace battle {
@@ -17,10 +18,12 @@ class State : public boardgame::State
 	REU__PROPERTY_PASS_REF(std::vector<Unit*>, _listUnitp, ListUnitp);	
 	REU__PROPERTY(std::vector<int>, _listWait0, ListWait0);
 	REU__PROPERTY(std::vector<int>, _listWait1, ListWait1);
+	REU__PROPERTY(std::vector<Floor>, _listFloor, ListFloor);
 
 public:
 	State(int playerMax, 
-			int width, int height, const std::vector<Unit*>& listUnitp);
+			int width, int height, const std::vector<Unit*>& listUnitp,
+			const std::vector<Floor>& listFloor);
 
 	State(const State& o);
 

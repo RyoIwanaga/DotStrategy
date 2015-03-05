@@ -9,6 +9,7 @@ namespace tactics {
 
 class Unit
 {
+
 	REU__PROPERTY(int, _id, Id);
 	REU__PROPERTY(int, _hp, Hp);
 	REU__PROPERTY(int, _hpMax, HpMax);
@@ -19,6 +20,9 @@ class Unit
 	REU__PROPERTY(int, _initiative, Initiative);
 	REU__PROPERTY(int, _owner, Owner);
 	REU__PROPERTY(boardgame::Point, _pos, Pos);
+
+protected:
+	const int DAMAGE_PERCENT = 20;
 
 public: 
 	Unit(int id, int hp, int damage, int attack, int defend, 
@@ -41,10 +45,19 @@ public:
 		return (double) _hp / _hpMax * 100;
 	}
 
+	int getDamageRandom() const
+	{
+		return reu::RandMt::rangePercent(_damage, DAMAGE_PERCENT);
+	}
+
 	virtual int getDamageMelee() const
 	{
-		REU_DEBUG__PRINT("unit");
-		return _damage;
+		return getDamageRandom();
+	}
+
+	virtual int getDamageRanged() const
+	{
+		throw "Exception: Unit::getDamageMelee";
 	}
 
 	/***** Predicate ******/
@@ -79,7 +92,6 @@ public:
 
 	virtual bool isRanged() const
 	{
-		REU_DEBUG__PRINT("unit::isranged");
 		return false;
 	}
 

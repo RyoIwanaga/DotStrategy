@@ -26,6 +26,7 @@ const int DAMAGE_MOVE_Y = 20;
 enum Z
 {
 	BG,
+	OBJ,
 	FLOOR,
 	FLOOR_SIGN,
 	EDGE,
@@ -99,19 +100,24 @@ bool BattleScene::init()
 				boardgame::Point(8, 4)));
 
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(5, 0)));
+				boardgame::Point(6, 0)));
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(5, 1)));
+				boardgame::Point(6, 1)));
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(5, 2)));
+				boardgame::Point(6, 2)));
 
-	auto state_p = new tb::State(2, _boardWidth, _boardHeight, units);
+	// make rocks
+	std::vector<tb::Floor> rocks;
+	tb::Floor::collectRocks(&rocks, _boardWidth, _boardHeight, 4, 3);
+
+	auto state_p = new tb::State(2, _boardWidth, _boardHeight, units, rocks);
 
 	// Make tree
 	_root = new boardgame::Tree<tb::State>(
 			state_p, &_game);
 
-//	_game.playerAddHuman();
+	_game.playerAddHuman();
+	_game.playerAddHuman();
 	_game.playerAddAi(1);
 	_game.playerAddAi(1);
 
@@ -175,6 +181,13 @@ bool BattleScene::init()
 		spriteUnit_p->addChild(loadingBarHp_p, static_cast<int>(Z::HP));
 		loadingBarHp_p->setPosition(Vec2(EDGE_WIDTH / 2 - 6, 1)); // XXX
 		_listLoadingBarHp.pushBack(loadingBarHp_p); // PUSH
+	}
+
+	// place object
+	for (tb::Floor rock : rocks) {
+		Sprite* spriteRock = Sprite::create("obj_rock.png");
+		spriteRock->setPosition(getPosition(rock.getPos()));
+		this->addChild(spriteRock, static_cast<int>(Z::OBJ));
 	}
 
 //	syncState(*state_p);
@@ -300,9 +313,6 @@ void BattleScene::makeButton(boardgame::Tree<tb::State>* tree_p)
 					RotateTo::create(1, Vec3(0, 180, 0)),
 					RotateTo::create(1, Vec3(0, 360, 0)),
 					NULL)));
-
-
-
 
 	makeButtonMove(tree_p);
 	makeButtonAttackMelee(tree_p);

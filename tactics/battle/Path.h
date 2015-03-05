@@ -9,18 +9,18 @@ namespace tactics {
 class Path : public std::vector<boardgame::Point>
 {
 private:
-	int _line; // = -1 . Caluculate later.
+	double _line; // = -1 . Caluculate later.
 
 public:
 	Path() :
-		_line(-1)
+		_line(-1.0)
    	{}
 
 	virtual ~Path() {}
 
 	/** Lazy eval
 	 */
-	int getLine()
+	double getLine()
 	{
 		if (_line == -1) {
 			_line = this->countLine();
@@ -31,7 +31,7 @@ public:
 
 	void print()
 	{
-		printf("[%dL] ", this->getLine());
+		printf("[%fL] ", this->getLine());
 
 		for (auto point: *this) {
 			point.print();
@@ -48,7 +48,7 @@ public:
 	}
 
 private:
-	int countLine()
+	double countLine()
 	{
 		if (this->size() == 1) {
 			return 0;	
@@ -61,7 +61,7 @@ private:
 		this->countLine(vx, vy, 2);
 	}
 
-	int countLine(int vx, int vy, int index)
+	double countLine(int vx, int vy, int index)
 	{
 		if (this->size() <= index) {
 			return _line;
@@ -72,7 +72,11 @@ private:
 
 			// vector is changed
 			if (vx != vx2 || vy != vy2) {
-				_line ++;	
+				if (vx2 !=0 && vy2 != 0) {
+					_line += 1.1; // XXX
+				} else {
+					_line += 1.0;
+				}
 			}
 
 			this->countLine(vx2, vy2, index+1);

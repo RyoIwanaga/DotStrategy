@@ -229,25 +229,51 @@ NEW_TreeAttackMelee(const State& state, const Path& path,
 {
 	auto activeUnitIndex = state.getActiveUnitIndex();
 
-	// make state
+	// make new state
 	auto newState_p = new tactics::battle::State(state);
 	auto newUnits = newState_p->getListUnitp();
+	Unit* newUnitActive = newUnits.at(activeUnitIndex);
+	Unit* newUnitTarget = newUnits.at(targetIndex);
 
-	// first damage
-	int damage1 = state.getActiveUnit().getDamageMelee();
-state.getActiveUnit().isRanged();
+	/***** UPDATE new state *****/
 
-	// move active unit
-	newUnits.at(activeUnitIndex)->setPos(path.back());
-	// attack
-	bool isDead = newUnits.at(activeUnitIndex)->UPDATE_attack(
-			newUnits.at(targetIndex), damage1);
+	/*** Move ***/
+
+	newUnitActive->setPos(path.back());
+
+	/*** attack ***/
+
+	std::vector<Attack> attacks;
+
+	/* first attack */
+
+	// first attack
+	int damage1 = newUnitActive->getDamageMelee();
+	// UPDATE
+	bool isDead1 = newUnitActive->UPDATE_attack(newUnitTarget, damage1);
+	// PUSH result
+	attacks.push_back(Attack(activeUnitIndex, damage1, isDead1));
+
+
+	/* second(conter) attack */
+
+	if (newUnitTarget->isCanRetaliate()) {
+		int damage2 = newUnitTarget->getDamageMelee();
+		// UPDATE
+		bool isDead2 = newUnitTarget->UPDATE_attack(newUnitActive, damage2);
+		// PUSH result
+		attacks.push_back(Attack(targetIndex, damage2, isDead2));
+
+		newUnitTarget->UPDATE_retaliated();
+	}
+	else {
+		attacks.push_back(Attack()); // make no damage attack
+	}
 
 	// make action
 	auto action_p = new tactics::battle::ActionAttackMelee(
 			state.getPlayer(), activeUnitIndex, targetIndex, 
-			damage1,
-			path, pTarget, isDead);
+			path, pTarget, attacks);
 
 	// go next turn
 	newState_p->UPDATE_nextUnit();

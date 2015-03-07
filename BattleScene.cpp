@@ -13,6 +13,7 @@ const int EDGE_START_Y = 28;
 
 const int TARGET_ADD_Y = 30;
 
+
 /*** Animation ***/
 
 const float ANIMATION_MOVE_SPEED = 0.2;
@@ -64,12 +65,18 @@ bool BattleScene::init()
 
 	auto size = Director::getInstance()->getWinSize();
 
-	/*** Music ***/
+	/*** Music and SE***/
 
-	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.9);
-	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.9);
-//	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("bm/Ouroboros.mp3");
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Future Gladiator.mp3");
+	// Music
+	if (DEBUG::MUSIC) {
+		SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.9);
+		SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Future Gladiator.mp3");
+	}
+
+	// SE setting
+	if (DEBUG::SE) {
+		SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.9);
+	}
 
 	/*** Game ***/
 
@@ -85,6 +92,8 @@ bool BattleScene::init()
 				boardgame::Point(0, 2)));
 
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
+				boardgame::Point(2, 1)));
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 2)));
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
 				boardgame::Point(2, 3)));
@@ -92,6 +101,8 @@ bool BattleScene::init()
 				boardgame::Point(2, 4)));
 
 	// player 2
+	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
+				boardgame::Point(8, 1)));
 	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 2)));
 	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
@@ -105,6 +116,8 @@ bool BattleScene::init()
 				boardgame::Point(6, 1)));
 	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
 				boardgame::Point(6, 2)));
+	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
+				boardgame::Point(6, 3)));
 
 	// make rocks
 	std::vector<tb::Floor> rocks;
@@ -118,8 +131,7 @@ bool BattleScene::init()
 
 	_game.playerAddHuman();
 	_game.playerAddHuman();
-	_game.playerAddAi(1);
-	_game.playerAddAi(1);
+//	_game.playerAddAi(1);
 
 	/*** Bg ***/
 
@@ -171,7 +183,7 @@ bool BattleScene::init()
 
 		spriteUnit_p->setPosition(this->getPosition(unit_p->getPos()));
 		spriteUnit_p->setCascadeOpacityEnabled(true); // Apply child to opacity
-		this->addChild(spriteUnit_p, static_cast<int>(Z::UNIT)); // XXX ちゃんと　x older を使用すること
+		this->addChild(spriteUnit_p, static_cast<int>(Z::UNIT)); // XXX 縺｡繧�繧薙→縲�x older 繧剃ｽｿ逕ｨ縺吶ｋ縺薙→
 		_listSpritesUnit.pushBack(spriteUnit_p); // PUSH
 
 		/*** Hp ***/
@@ -254,8 +266,10 @@ void BattleScene::hundleTree(boardgame::Tree<tb::State>* tree_p)
 	tree_p->DELETE_askParentToDeleteBrother();
 	tree_p->force();
 	if (tree_p->isTerminal()) {
-		log("%s game end", __func__);
-		SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bm/Take a Chance.mp3");
+		if (DEBUG::MUSIC) {
+			SimpleAudioEngine::sharedEngine()->
+					playBackgroundMusic("bm/Take a Chance.mp3");
+		}
 
 //		std::vector<int> wins;
 //		_game.collectWinner(&wins, *state_p);
@@ -264,7 +278,6 @@ void BattleScene::hundleTree(boardgame::Tree<tb::State>* tree_p)
 	}
 	// human
 	else if (_game.getListAi_p().at(player) == nullptr) {
-		log("%s human", __func__);
 		makeButton(tree_p);
 	}
 	// ai
@@ -364,7 +377,7 @@ void BattleScene::makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p)
 						this->executeAction(child_p);
 					}
 
-					// 以降のイベントを処理しない
+					// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 					return false;
 				};
 
@@ -413,7 +426,7 @@ void BattleScene::makeButtonMove(boardgame::Tree<tb::State>* tree_p)
 					this->executeAction(child_p);
 				}
 
-				// 以降のイベントを処理しない
+				// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 				return false;
 				};
 
@@ -486,7 +499,7 @@ void BattleScene::makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p)
 				this->makeButtonAttackMeleeExecute(branches);
 			}
 
-			// 以降のイベントを処理しない
+			// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 			return false;
 		};
 
@@ -534,7 +547,7 @@ void BattleScene::makeButtonAttackMeleeExecute(
 				this->executeAction(tree_p);
 			}
 
-			// 以降のイベントを処理しない
+			// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 			return false;
 		};
 
@@ -564,9 +577,8 @@ void BattleScene::executeAction(boardgame::Tree<tb::State>* tree_p)
 				cast->getUnitIndex(),
 				cast->getTargetIndex(),
 				cast->getPath(),
-				cast->getDamage(),
-				cast->getIsTargetDead(),
-				cast->getPosTarget());
+				cast->getPosTarget(),
+				cast->getAttacks());
 	}
 	// ActionAttackRange
 	else if (dynamic_cast<tb::ActionAttackRange*>(action_p) != nullptr) {
@@ -605,29 +617,49 @@ void BattleScene::mainAnimationMove(boardgame::Tree<tb::State>* tree_p,
 
 void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 		int indexUnit, int indexTarget, const tb::Path& path,
-		int damage, bool isDead, boardgame::Point pTarget,
+		boardgame::Point pTarget,
+		const std::vector<tb::Attack>& attacks,
 		int indexPath) // = 1
 {
 	if (path.size() <= indexPath || path.size() == 1) {
-		auto from = getPosition(path.back());
-		auto target = getPosition(pTarget);
+		boardgame::Point pUnit = path.back();
+		Vec2 from = getPosition(pUnit);
+		Vec2 target = getPosition(pTarget);
 
-		_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
-					MoveTo::create(ANIMATION_MOVE_SPEED, target),
-					CallFunc::create([this, damage, pTarget, isDead]
+		// retaliation
+		if (attacks[1].isHaveDamage()) {
+			Sprite* sTarget = _listSpritesUnit.at(indexTarget);
+
+			_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
+					makeActionAttackMelee(pUnit, pTarget,
+							attacks[0].getDamage(),
+							attacks[0].getIsDead()),
+					CallFunc::create([this, tree_p, sTarget, pTarget, pUnit, attacks]
 					{
-						SimpleAudioEngine::sharedEngine()->playEffect("se/straight_punch.mp3");
-						if (isDead) {
-							SimpleAudioEngine::sharedEngine()->playEffect("se/devil_groaning1.mp3");
-						}
-						this->drawFloatDamage(damage, pTarget);
+						sTarget->runAction(Sequence::create(
+								makeActionAttackMelee(pTarget, pUnit,
+										attacks[1].getDamage(),
+										attacks[1].getIsDead()),
+								CallFunc::create([this, tree_p]
+								{
+									this->hundleTree(tree_p);
+								}),
+								NULL));
 					}),
-					MoveTo::create(ANIMATION_MOVE_SPEED, from),
+					NULL));
+		}
+		// no retaliation
+		else {
+			_listSpritesUnit.at(indexUnit)->runAction(Sequence::create(
+					makeActionAttackMelee(pUnit, pTarget,
+							attacks[0].getDamage(),
+							attacks[0].getIsDead()),
 					CallFunc::create([this, tree_p]
 					{
 						this->hundleTree(tree_p);
 					}),
 					NULL));
+		}
 	}
 	// move
 	else {
@@ -636,7 +668,7 @@ void BattleScene::mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 					CallFunc::create([=]()
 					{
 						this->mainAnimationMelee(tree_p, indexUnit, indexTarget,
-								path, damage, isDead, pTarget, indexPath + 1);
+								path, pTarget, attacks, indexPath + 1);
 					}),
 					NULL));
 	}
@@ -657,7 +689,8 @@ void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 	arrow->runAction(Sequence::create(
 			CallFunc::create([]()
 			{
-				SimpleAudioEngine::sharedEngine()->playEffect("se/attack1.mp3");
+				if(DEBUG::SE)
+					SimpleAudioEngine::sharedEngine()->playEffect("se/attack1.mp3");
 			}),
 			MoveTo::create(0.6, this->getPosition(pTarget)),
 			// REMOVE and draw damage
@@ -666,9 +699,12 @@ void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 				auto node = dynamic_cast<Node*>(ref);
 				node->removeFromParent();
 
-				SimpleAudioEngine::sharedEngine()->playEffect("se/damage1.mp3");
+				if(DEBUG::SE)
+					SimpleAudioEngine::sharedEngine()->playEffect("se/damage1.mp3");
+
 				if (isDead) {
-					SimpleAudioEngine::sharedEngine()->playEffect("se/devil_groaning1.mp3");
+					if(DEBUG::SE)
+						SimpleAudioEngine::sharedEngine()->playEffect("se/devil_groaning1.mp3");
 				}
 
 				// draw damage
@@ -677,6 +713,31 @@ void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 				hundleTree(tree_p);
 			}),
 			NULL));
+}
+
+FiniteTimeAction* BattleScene::makeActionAttackMelee(
+		const boardgame::Point& from,
+		const boardgame::Point& to,
+		int damage,
+		bool isDead) // = false
+{
+	return Sequence::create(
+			MoveTo::create(ANIMATION_MOVE_SPEED, getPosition(to)),
+			CallFunc::create([this, from, to, damage, isDead]
+			{
+				if(DEBUG::SE)
+					SimpleAudioEngine::sharedEngine()->
+					playEffect("se/straight_punch.mp3");
+
+				if (isDead) {
+					if(DEBUG::SE)
+						SimpleAudioEngine::sharedEngine()->
+						playEffect("se/devil_groaning1.mp3");
+				}
+				this->drawFloatDamage(damage, to);
+			}),
+			MoveTo::create(ANIMATION_MOVE_SPEED, getPosition(from)),
+			NULL);
 }
 
 void BattleScene::drawFloatDamage(int damage, const boardgame::Point& pos)
@@ -711,5 +772,5 @@ void BattleScene::RESET_buttons()
 		s->removeFromParent();
 	}
 
-	_eventDispatcher->removeAllEventListeners(); // FIXME 本当はリスト上のものを削除
+	_eventDispatcher->removeAllEventListeners(); // FIXME
 }

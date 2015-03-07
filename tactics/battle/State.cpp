@@ -45,9 +45,13 @@ bool State::init()
 	_listWait0.clear();
 	_listWait1.clear();
 
-	// only use living unit
+	// reset retaliation counter
+	for (Unit* unit_p : _listUnitp) {
+		unit_p->setIsUsedRetaliation(false);
+	}
+
 	for (unsigned int i=0; i<_listUnitp.size(); i++) {
-		// is not dead
+		// only use living unit
 		if (!(_listUnitp.at(i)->isDead()))
 			// add index
 			_listWait0.push_back(i);
@@ -70,7 +74,7 @@ bool State::init()
 	return true;
 }
 
-void State::UPDATE_nextUnit() // FIXME wait1 ‚ðl—¶‚µ‚Ä‚¢‚È‚¢
+void State::UPDATE_nextUnit() // FIXME wait1 ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 {
 	if (_listWait0.size() == 1) {
 		_listWait0.clear();
@@ -83,7 +87,7 @@ void State::UPDATE_nextUnit() // FIXME wait1 ‚ðl—¶‚µ‚Ä‚¢‚È‚¢
 		// remove first index (current index of unit)
 		_listWait0.erase(_listWait0.begin());
 
-		// XXX ó‘ÔˆÙí‚ðl—¶‚µ‚Ä‚¢‚È‚¢
+		// XXX ï¿½ï¿½ÔˆÙï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 		if (_listUnitp[_listWait0[0]]->isDead()) {
 			this->UPDATE_nextUnit();			
 		} 

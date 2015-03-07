@@ -9,6 +9,18 @@ ALL=../Unit.cpp ../State.cpp ../Battle.cpp ../Floor.cpp ../../../boardgame/Board
 
 ### Target ###
 
+TEST_Path: TEST_Path.cpp
+	${CC} ${CPP11} TEST_Path.cpp
+	${EXECUTE}
+
+TEST_Attack: TEST_Attack.cpp
+	${CC} ${CPP11} TEST_Attack.cpp
+	${EXECUTE}
+
+TEST_Actions: TEST_Actions.cpp
+	${CC} ${CPP11} TEST_Actions.cpp
+	${EXECUTE}
+
 TEST_Floor: TEST_Floor.cpp
 	${CC} ${CPP11} TEST_Floor.cpp ../Floor.cpp
 	${EXECUTE}
@@ -24,11 +36,6 @@ TEST_State: TEST_State.cpp
 TEST_Battle: TEST_Battle.cpp ../Unit.cpp ../UnitRanged.cpp ../Floor.cpp ../State.cpp ../Battle.cpp  ../../../boardgame/BoardGame.cpp
 	${CC} ${CPP11} TEST_Battle.cpp ../Unit.cpp ../UnitRanged.cpp ../Floor.cpp ../State.cpp ../Battle.cpp  ../../../boardgame/BoardGame.cpp
 	${EXECUTE}
-
-TEST_Path: TEST_Path.cpp ../Battle.cpp ../Unit.cpp ../State.cpp ../../../boardgame/BoardGame.cpp
-	${CC} ${CPP11} $^
-	${EXECUTE}
-
 
 # $@ 	ターゲットファイル名
 # $< 	最初の依存ファイル名

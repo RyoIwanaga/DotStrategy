@@ -49,7 +49,6 @@ public:
 
 		printf(" archer ");
 	}
-
 };
 
 }} // end of namespace tactics::battle

@@ -9,7 +9,6 @@ namespace tactics {
 
 class Unit
 {
-
 	REU__PROPERTY(int, _id, Id);
 	REU__PROPERTY(int, _hp, Hp);
 	REU__PROPERTY(int, _hpMax, HpMax);
@@ -20,6 +19,8 @@ class Unit
 	REU__PROPERTY(int, _initiative, Initiative);
 	REU__PROPERTY(int, _owner, Owner);
 	REU__PROPERTY(boardgame::Point, _pos, Pos);
+
+	REU__PROPERTY(bool, _isUsedRetaliation, IsUsedRetaliation);
 
 protected:
 	const int DAMAGE_PERCENT = 20;
@@ -45,9 +46,18 @@ public:
 		return (double) _hp / _hpMax * 100;
 	}
 
+	/** Unit deal 100 ~ 50 % damage depends on current health
+	 *
+	 *  100% hp	-> deal 100% damage
+	 *  50% hp 	-> deal 75% damage
+	 *  0% hp 	-> deal 50% damage
+	 */
 	int getDamageRandom() const
 	{
-		return reu::RandMt::rangePercent(_damage, DAMAGE_PERCENT);
+		int damage = reu::RandMt::rangePercent(_damage, DAMAGE_PERCENT);
+		int damageHarf = damage / 2;
+
+		return damageHarf + damageHarf * getHpParsent() / 100;
 	}
 
 	virtual int getDamageMelee() const
@@ -57,7 +67,7 @@ public:
 
 	virtual int getDamageRanged() const
 	{
-		throw "Exception: Unit::getDamageMelee";
+		throw "Exception: Unit::getDamageRanged";
 	}
 
 	/***** Predicate ******/
@@ -93,6 +103,23 @@ public:
 	virtual bool isRanged() const
 	{
 		return false;
+	}
+
+	/** Unit was not retailed, he can counter attack.
+	 */
+	virtual bool isCanRetaliate()
+	{
+		// Dead unit can't attack
+		if (this->isDead()) {
+			return false;
+		}
+
+		return !_isUsedRetaliation;
+	}
+
+	virtual void UPDATE_retaliated()
+	{
+		_isUsedRetaliation = true;
 	}
 
 	virtual bool UPDATE_attack(Unit* unitp, int damage)

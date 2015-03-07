@@ -14,7 +14,8 @@ Unit::Unit(int id, int hp, int damage, int attack, int defend,
 	_speed(speed),
 	_initiative(initiative),
 	_owner(owner),
-	_pos(p)
+	_pos(p),
+	_isUsedRetaliation(false)
 {}
 
 Unit::Unit(const Unit& o) :
@@ -27,7 +28,8 @@ Unit::Unit(const Unit& o) :
 	_speed(o.getSpeed()),
 	_initiative(o.getInitiative()),
 	_owner(o.getOwner()),
-	_pos(o.getPos())
+	_pos(o.getPos()),
+	_isUsedRetaliation(o.getIsUsedRetaliation())
 {}
 
 void Unit::print()

@@ -24,14 +24,14 @@ void TEST_play()
 	printf("TEST::Battle\n");
 	// make stone
 	std::vector<tactics::battle::Unit*> units;
-	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 3, 8, 0, 
-				boardgame::Point(0, 0)));
-	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 3, 8, 0, 
-				boardgame::Point(0, 3)));
-	units.push_back(new tactics::battle::UnitRanged(2, 100, 50, 4 ,5, 3, 10, 1, 
-				boardgame::Point(8, 3)));
-	units.push_back(new tactics::battle::UnitRanged(2, 100, 50, 4 ,5, 3, 11, 1, 
-				boardgame::Point(8, 1)));
+	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 7, 10, 0,
+				boardgame::Point(1, 0)));
+	units.push_back(new tactics::battle::Unit(1, 100, 50, 4 ,5, 7, 10, 0,
+				boardgame::Point(1, 3)));
+	units.push_back(new tactics::battle::UnitRanged(2, 200, 50, 4 ,5, 3, 8, 1,
+				boardgame::Point(7, 3)));
+	units.push_back(new tactics::battle::UnitRanged(2, 200, 50, 4 ,5, 3, 8, 1,
+				boardgame::Point(7, 1)));
 
 	// make stone
 	std::vector<tb::Floor> stones;

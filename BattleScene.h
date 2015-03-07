@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
+#include "_debug.h"
 #include "tactics/battle/Battle.h"
 
 namespace tb = tactics::battle;
@@ -56,11 +57,13 @@ private:
 	void makeButtonMove(boardgame::Tree<tb::State>* tree_p);
 	void makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p);
 	void makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p);
-	void makeButtonAttackMeleeExecute(const std::vector<boardgame::Tree<tb::State>*>& listTree_p);
+	void makeButtonAttackMeleeExecute(
+			const std::vector<boardgame::Tree<tb::State>*>& listTree_p);
 
 	/*** Execute Action ***/
 
 	void executeAction(boardgame::Tree<tb::State>* tree_p);
+
 
 	/*** Animation ***/
 
@@ -68,7 +71,8 @@ private:
 			int indexUnit, const tb::Path& path, int indexPath = 1);
 	void mainAnimationMelee(boardgame::Tree<tb::State>* tree_p,
 			int indexUnit, int indexTarget, const tb::Path& path,
-			int damage, bool isDead, boardgame::Point pTarget,
+			boardgame::Point pTarget,
+			const std::vector<tb::Attack>& attacks,
 			int indexPath = 1);
 	void mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 			int indexUnit, int indexTarget,
@@ -76,9 +80,12 @@ private:
 			const boardgame::Point pFrom,
 			const boardgame::Point pTarget);
 
+	cocos2d::FiniteTimeAction* makeActionAttackMelee(
+			const boardgame::Point& from,
+			const boardgame::Point& to,
+			int damage, bool isDead = false);
 
 	void drawFloatDamage(int damage, const boardgame::Point& pos);
-
 };
 
 #endif // _Strategy__BattleScene_h_

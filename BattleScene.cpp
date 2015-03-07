@@ -101,8 +101,6 @@ bool BattleScene::init()
 				boardgame::Point(2, 4)));
 
 	// player 2
-	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
-				boardgame::Point(8, 1)));
 	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
 				boardgame::Point(8, 2)));
 	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
@@ -130,8 +128,7 @@ bool BattleScene::init()
 			state_p, &_game);
 
 	_game.playerAddHuman();
-	_game.playerAddHuman();
-//	_game.playerAddAi(1);
+	_game.playerAddAi(1);
 
 	/*** Bg ***/
 

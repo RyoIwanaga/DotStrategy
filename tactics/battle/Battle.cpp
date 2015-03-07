@@ -32,6 +32,12 @@ Battle::makeChilds(boardgame::Tree<State>* tree_p)
 		return result_p;
 	}
 
+	/***** PUSH wait action when normal turn *****/
+	
+	if (state_p->isTurnNormal()) {
+		result_p->push_back(NEW_TreeWait(*state_p));
+	}
+
 	/***** Collect Move : AttackRanged *****/
 
 	if (isShootable) {
@@ -107,7 +113,8 @@ bool Battle::collectWinner(std::vector<int>* wins_p, const State& state)
 						return true;	
 					} 
 					return unit_p->isDead();
-				})) {
+				})) 
+	{
 		wins_p->push_back(1);
 	}
 
@@ -218,6 +225,30 @@ NEW_TreeAttackRanged(const State& state, int targetIndex)
 
 	// go next turn
 	newState_p->UPDATE_nextUnit();
+
+	return new boardgame::Tree<State>(
+				action_p, newState_p);
+}
+
+
+/****** Make NEW tree ******/
+
+boardgame::Tree<State>* 
+NEW_TreeWait(const State& state)
+{
+	auto activeUnitIndex = state.getActiveUnitIndex();
+
+	// copy state
+	auto newState_p = new tactics::battle::State(state);
+	auto newUnits = newState_p->getListUnitp();
+	Unit* newUnitActive = newUnits.at(activeUnitIndex);
+
+	// make action
+	auto action_p = new tactics::battle::ActionWait(
+			state.getPlayer(), activeUnitIndex);
+
+	// go next turn
+	newState_p->UPDATE_nextUnitWait();
 
 	return new boardgame::Tree<State>(
 				action_p, newState_p);
@@ -349,7 +380,7 @@ void collectPath(std::vector<Path>* result_p,
 				}
 				// Same size but less line
 				else if (result_p->at(index).size() == path.size() &&
-						result_p->at(index).getLine() > path.getLine()) {
+						result_p->at(index).forceLine() > path.forceLine()) {
 					result_p->at(index) = path;
 				}
 			}

@@ -74,28 +74,54 @@ bool State::init()
 	return true;
 }
 
-void State::UPDATE_nextUnit() // FIXME wait1 ���l�����Ă��Ȃ�
+void State::UPDATE_nextUnit()
 {
-	if (_listWait0.size() == 1) {
-		_listWait0.clear();
-		// remake wait list
-		this->init();
-
-		return;
-	} 
-	else {
-		// remove first index (current index of unit)
+	// When normal turn
+	if (this->isTurnNormal()) {
+		// remove first unit index from normal list
 		_listWait0.erase(_listWait0.begin());
 
-		// XXX ��Ԉُ���l�����Ă��Ȃ�
-		if (_listUnitp[_listWait0[0]]->isDead()) {
-			this->UPDATE_nextUnit();			
+		if (this->isWaitListNeedToInit()) {
+			this->init();
+			return;
+		} 
+		else if (this->getActiveUnit().isDead()) {
+			this->UPDATE_nextUnit();
+			return;	
 		} 
 		else {
-			// DONE
 			return;
 		}
 	}
+	// When wait turn
+	else if (this->isTurnWait()){
+		// remove first unit index from wait list
+		_listWait1.erase(_listWait1.begin());
+
+		if (this->isWaitListNeedToInit()) {
+			this->init();
+			return;
+		} 
+		else if (this->getActiveUnit().isDead()) {
+			this->UPDATE_nextUnit();
+			return;	
+		} 
+		else {
+			return;
+		}
+	}
+	else {
+		throw "Error: State::UPDATE_nextUnit";
+	}
+}
+
+void State::UPDATE_nextUnitWait()
+{
+	// Can't call this method from wait turn
+	assert(this->isTurnNormal() == true);
+
+	_listWait1.insert(_listWait1.begin(), _listWait0[0]);
+	this->UPDATE_nextUnit();	
 }
 
 void State::print(int depth)

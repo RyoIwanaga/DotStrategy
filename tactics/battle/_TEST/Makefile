@@ -3,8 +3,8 @@
 CC=c++
 CFLAGS=-Wall -O
 CPP11=-std=c++11
-EXECUTE=a.exe
-#EXECUTE=./a.out
+#EXECUTE=a.exe
+EXECUTE=./a.out
 ALL=../Unit.cpp ../State.cpp ../Battle.cpp ../Floor.cpp ../../../boardgame/BoardGame.cpp
 
 ### Target ###

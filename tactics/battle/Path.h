@@ -9,7 +9,7 @@ namespace tactics {
 class Path : public std::vector<boardgame::Point>
 {
 private:
-	double _line; // = -1 . Caluculate later.
+	double _line; // = -1 . Caluculate this later.
 
 public:
 	Path() :
@@ -20,9 +20,9 @@ public:
 
 	/** Lazy eval
 	 */
-	double getLine()
+	double forceLine()
 	{
-		if (_line == -1) {
+		if (_line == -1.0) {
 			_line = this->countLine();
 		}
 
@@ -31,7 +31,7 @@ public:
 
 	void print()
 	{
-		printf("[%fL] ", this->getLine());
+		printf("[%fL] ", forceLine());
 
 		for (auto point: *this) {
 			point.print();
@@ -50,14 +50,22 @@ public:
 private:
 	double countLine()
 	{
+		// no line
 		if (this->size() == 1) {
-			return 0;	
+			return 0.0;	
 		}
 
 		int vx = this->at(1).getX() - this->at(0).getX();
 		int vy = this->at(1).getY() - this->at(0).getY();
 
-		this->_line = 1;
+		// init line
+		if (vx !=0 && vy != 0) {
+			_line = 1.001;
+		} else {
+			_line = 1.0;
+		}
+
+		// start counting
 		this->countLine(vx, vy, 2);
 	}
 
@@ -67,19 +75,19 @@ private:
 			return _line;
 		}
 		else {
-			int vx2 = this->at(index).getX() - this->at(index - 1).getX();
-			int vy2 = this->at(index).getY() - this->at(index - 1).getY();
+			int vxNew = this->at(index).getX() - this->at(index - 1).getX();
+			int vyNew = this->at(index).getY() - this->at(index - 1).getY();
 
 			// vector is changed
-			if (vx != vx2 || vy != vy2) {
-				if (vx2 !=0 && vy2 != 0) {
-					_line += 1.1; // XXX
+			if (vx != vxNew || vy != vyNew) {
+				if (vxNew !=0 && vyNew != 0) {
+					_line += 1.001;
 				} else {
 					_line += 1.0;
 				}
 			}
 
-			this->countLine(vx2, vy2, index+1);
+			this->countLine(vxNew, vyNew, index+1);
 		}
 	}
 };

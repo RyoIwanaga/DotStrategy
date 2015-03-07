@@ -44,6 +44,9 @@ bool collectMoveAttackMeleeFromPath(std::vector<boardgame::Tree<State>*>* result
 /*** Make new tree ***/
 
 boardgame::Tree<State>* 
+NEW_TreeWait(const State& state);
+
+boardgame::Tree<State>* 
 NEW_TreeAttackRanged(const State& state, int targetIndex);
 
 boardgame::Tree<State>* 

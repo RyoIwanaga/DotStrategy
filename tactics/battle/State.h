@@ -17,7 +17,7 @@ class State : public boardgame::State
 	// DELETE unit pointer on destruct
 	REU__PROPERTY_PASS_REF(std::vector<Unit*>, _listUnitp, ListUnitp);	
 	REU__PROPERTY(std::vector<int>, _listWait0, ListWait0);
-	REU__PROPERTY(std::vector<int>, _listWait1, ListWait1);
+	REU__PROPERTY(std::vector<int>, _listWait1, ListWait1); // STACK
 	REU__PROPERTY(std::vector<Floor>, _listFloor, ListFloor);
 
 public:
@@ -34,16 +34,18 @@ public:
 	 */
 	bool init();
 
+	/***** Getter ******/
+
 	int getActiveUnitIndex() const
 	{
-		if (!(_listWait0.empty())) {
+		if (this->isTurnNormal()) {
 			return _listWait0.at(0);
 		}
-		else if (!(_listWait1.empty())) {
+		else if (this->isTurnWait()) {
 			return _listWait1.at(0);
 		}
 		else {
-			throw "State::getActiveUnitIdex error";
+			throw "Error: State::getActiveUnitIndex";
 		}
 	}
 
@@ -62,11 +64,42 @@ public:
 		return this->getActiveUnit().getOwner();
 	}
 
-	// TODO Unit test when dead
+	/***** Predicate ******/
+
+	virtual bool isTurnNormal() const
+	{
+		return _listWait0.size() >= 1;
+	}
+
+	virtual bool isTurnWait() const
+	{
+		return _listWait0.size() == 0 && _listWait1.size() >= 1;
+	}
+	//
+	
+
+	/***** UPDATE State ******
+	 *
+	 * Called by make tree functions
+	 */
+
+	/** Simply pass turn. Called by attack melee, attack ranged, move ...
+	 */
 	virtual void UPDATE_nextUnit();
+
+	/** Pass unit turn and push unit to wait1 list.
+	 *  Can't call this method from wait turn.
+	 */
+	virtual void UPDATE_nextUnitWait();
 
 	virtual void print(int depth = 0); // override
 	virtual void printUnits(int depth = 0);
+
+protected:
+	virtual bool isWaitListNeedToInit() const
+	{
+		return _listWait0.size() == 0 && _listWait1.size() == 0;
+	}
 };
 
 }} // end of namespace tactics::battle

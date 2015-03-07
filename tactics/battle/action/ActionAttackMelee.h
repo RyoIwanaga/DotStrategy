@@ -70,7 +70,6 @@ class ActionAttackMelee : public boardgame::Action
 		for (auto attack : _attacks) {
 			attack.print();
 		}
-		REU__NEWLINE;
 	}
 };
 

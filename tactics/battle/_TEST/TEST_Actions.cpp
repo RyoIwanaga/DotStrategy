@@ -5,9 +5,12 @@ namespace tb = tactics::battle;
 
 int main(void)
 {
-	printf("TEST::Actions\n");
-
-	printf("actions::ActionAttackMelee\n");
+	printf("TEST::ActionWait\n");
+	{
+		tb::ActionWait wait(0, 1);
+		wait.print(); 
+		REU__NEWLINE;
+	}
 
 	// make path
 	tactics::battle::Path path;

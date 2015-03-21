@@ -8,8 +8,12 @@ EXECUTE=a.exe
 
 ### Target ###
 
-TEST_random: TEST_random.cpp
-	${CC} ${CPP11} TEST_random.cpp
+diagram: diagram.cpp
+	${CC} ${CPP11} diagram.cpp
+	${EXECUTE}
+
+random: random.cpp
+	${CC} ${CPP11} random.cpp
 	${EXECUTE}
 
 # $@ 	ターゲットファイル名

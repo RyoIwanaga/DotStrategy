@@ -6,8 +6,8 @@
 
 namespace DEBUG {
 
-const bool MUSIC = true;
-const bool SE = true;
+const bool MUSIC = false;
+const bool SE = false;
 
 }
 

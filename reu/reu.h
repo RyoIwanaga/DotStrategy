@@ -6,6 +6,7 @@
 
 #include "_header.h"
 #include "macro.h"
+#include "diagram.h"
 #include "RandMt.h"
 
 namespace reu { // namespace reu ///////////////////////////////////////////////
@@ -19,7 +20,6 @@ inline bool isEven(int n)
 {
 	return n % 2 == 0;
 }
-
 
 
 namespace vector { // namespace reu::vector ///////////////////////////////////

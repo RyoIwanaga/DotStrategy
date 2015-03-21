@@ -33,6 +33,8 @@ class BoardGame
 	REU__PROPERTY_READONLY_PASS_REF(std::vector<Ai<T>*>, _listAi_p, ListAi_p);
 
 public:
+	static const int FORCE_KIND_AI = 1;
+
 	BoardGame() {}
 	virtual ~BoardGame()
 	{
@@ -43,11 +45,12 @@ public:
 
 	virtual void play(Tree<T>* tree_p);
 
-	/** Make child branches from current state. Please OVERRIDE
+	/** Make child branches from current state. Please Override
 	 *  @called boardgame::Tree::force()
+	 *  @param flag: human or ai
 	 */
 	virtual std::vector<Tree<T>*>* 
-	makeChilds(Tree<T>* tree_p)
+	makeChilds(Tree<T>* tree_p, int flag = 0)
 	{
 		return new std::vector<Tree<T>*>();
 	}
@@ -116,16 +119,17 @@ void BoardGame<T>::play(Tree<T>* tree_p)
 
 	printf("\n===============================================\n");
 
-//	REU_DEBUG__SENTENCE(bool, isKilled, 
-//			tree_p->DELETE_askParentToDeleteBrother());
-
 	tree_p->print();
-	tree_p->force();
+	tree_p->DELETE_children();
 
-	//	std::vector<int> winPlayers;
-	//	dod::collectWinner(&winPlayers, tree_p->getState_p());
 
-	tree_p->force();
+	// force as human
+	if (_listAi_p[player] == nullptr) {
+		tree_p->force();
+	} else {
+		tree_p->force(_listAi_p[player]->getKind());
+	}
+
 	// game end
 	if (tree_p->isTerminal()) {
 		std::vector<int> wins;
@@ -181,6 +185,7 @@ Tree<T>* BoardGame<T>::hundleAi(Tree<T>* tree_p, Ai<T>& ai)
 	auto heirIndex = ai.choice(tree_p, player);
 	auto heir_p = tree_p->force()->at(heirIndex);
 
+
 	auto scores = ai.getPreScores();
 
 	// Print
@@ -188,7 +193,7 @@ Tree<T>* BoardGame<T>::hundleAi(Tree<T>* tree_p, Ai<T>& ai)
 			state_p->getPlayer());
 
 	auto i = 0;
-	for (auto treeNext_p: *(tree_p->force())) {
+	for (auto treeNext_p: *(tree_p->force(ai.getKind()))) {
 		if (i == heirIndex) {
 			printf("[*]");
 		} else {

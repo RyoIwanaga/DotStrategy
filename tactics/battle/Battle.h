@@ -12,6 +12,11 @@
 namespace tactics { 
 	namespace battle {
 
+enum class MakeChildFlag {
+	HUMAN = 0,
+	AI,
+};
+
 class Battle : public boardgame::BoardGame<State>
 {
 public:
@@ -19,9 +24,8 @@ public:
 	virtual ~Battle() {}
 
 protected:
-	// OVERRIDE
 	virtual std::vector<boardgame::Tree<State>*>* 
-		makeChilds(boardgame::Tree<State>* tree_p); 						
+		makeChilds(boardgame::Tree<State>* tree_p, int flag); // Override
 	virtual bool collectWinner(std::vector<int>* wins_p, const State& state);
 	virtual int scoreState(const State& state, int player);
 };
@@ -29,7 +33,6 @@ protected:
 /***** Function *****/
 
 /*** Collect move ***/
-
 
 bool collectAttackRanged(std::vector<boardgame::Tree<State>*>* result_p, 
 		const State &state);

@@ -7,7 +7,7 @@ namespace tactics {
 	namespace battle {
 
 std::vector<boardgame::Tree<State>*>* 
-Battle::makeChilds(boardgame::Tree<State>* tree_p)
+Battle::makeChilds(boardgame::Tree<State>* tree_p, int flag)
 {
 	auto result_p = new std::vector<boardgame::Tree<State>*>();
 	auto state_p = tree_p->getState_p();
@@ -24,6 +24,8 @@ Battle::makeChilds(boardgame::Tree<State>* tree_p)
 			// blocked by enemy?
 			!(activeUnit_p->isNextToEnemy(units, width, height));
 
+	REU__PRINT(":mc" << flag);
+
 	/***** Game End ? *****/
 
 	std::vector<int> wins;
@@ -32,11 +34,6 @@ Battle::makeChilds(boardgame::Tree<State>* tree_p)
 		return result_p;
 	}
 
-	/***** PUSH wait action when normal turn *****/
-	
-	if (state_p->isTurnNormal()) {
-		result_p->push_back(NEW_TreeWait(*state_p));
-	}
 
 	/***** Collect Move : AttackRanged *****/
 
@@ -67,6 +64,16 @@ Battle::makeChilds(boardgame::Tree<State>* tree_p)
 		collectMoveAttackMelee(result_p, *state_p, paths);
 	}
 
+	// Ai and already made attack child
+	if (flag == this->FORCE_KIND_AI && result_p->size() >= 1) {
+		return result_p; // RETURN
+	}
+
+	/***** PUSH wait action when normal turn *****/
+
+	if (state_p->isTurnNormal()) {
+		result_p->push_back(NEW_TreeWait(*state_p));
+	}
 
 	/***** Collect Move : Move *****/
 

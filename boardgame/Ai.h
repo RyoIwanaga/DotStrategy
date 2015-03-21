@@ -14,11 +14,15 @@ class Ai
 {
 	// Limited depth ai read
 	REU__PROPERTY_READONLY(int, _level, Level);
+	REU__PROPERTY_READONLY(int, _kind, Kind);
 	REU__PROPERTY_READONLY(std::vector<int>, _preScores, PreScores);
 
 public:
-	Ai(int level, BoardGame<T>& rule) :
+	static const int KIND_DEFAULT = 1;
+
+	Ai(int level, BoardGame<T>& rule, int kind = KIND_DEFAULT) :
 		_level(level),
+		_kind(kind),
 		_rule(rule) 
 	{}
 
@@ -37,7 +41,7 @@ template <class T> // State
 int Ai<T>::choice(Tree<T>* tree_p, int player)
 {
 	// FORCE tree
-	tree_p->forceRec(_level);
+	tree_p->forceRec(_level, _kind);
 
 	// Collect child scores
 	_preScores.clear();
@@ -53,7 +57,7 @@ template <class T> // State
 bool Ai<T>::collectScores(std::vector<int>* scores_p, Tree<T>& tree, int player)
 {
 	// for children
-	for (auto child_p: *(tree.force())) {
+	for (auto child_p: *(tree.force(_kind))) {
 		scores_p->push_back(getScore(*child_p, player));
 	}
 
@@ -65,19 +69,7 @@ int Ai<T>::getScore(Tree<T>& tree, int player)
 {
 	// When terminal calculate this state
 	if(tree.isTerminal()) {
-
 		return _rule.scoreTree(tree, player);
-//
-//		// Collect winners
-//		std::vector<int> wins;
-//		_rule.collectWinner(&wins, tree.getState_p());
-//
-//		if (reu::vector::isMember(wins, player)) {
-//			return INT_MAX - 10 / wins.size();
-//		} 
-//		else {
-//			return INT_MIN + 10;
-//		}
 	} 
 	else {
 		std::vector<int> scores;

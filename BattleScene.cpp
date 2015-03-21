@@ -7,9 +7,13 @@ using namespace CocosDenshion;
 const int FLOOR_WIDTH = 40;
 const int FLOOR_HEIGHT = 40;
 
+const int UI_HEIGHT = 52;
+const int UI_LEFT_MARGIN = 6;
+
 const int EDGE_WIDTH = 52;
 const int EDGE_START_X = 32;
-const int EDGE_START_Y = 28;
+// const int EDGE_START_Y = 28;
+const int EDGE_START_Y = UI_HEIGHT + 28;
 
 const int TARGET_ADD_Y = 30;
 
@@ -33,14 +37,16 @@ enum Z
 	EDGE,
 	UNIT,
 	HP,
+	UI_BG,
+	UI,
 	CURSOR,
 	ARROW,
-	DAMAGE
+	DAMAGE,
 };
 
 BattleScene::BattleScene() :
-		_boardWidth(9),
-		_boardHeight(5),
+		_boardWidth(0),
+		_boardHeight(0),
 		_root(nullptr)
 {}
 
@@ -49,15 +55,15 @@ BattleScene::~BattleScene()
 	delete _root;
 }
 
-Scene* BattleScene::createScene()
+Scene* BattleScene::createScene(const tb::State& state, EnumAi ai)
 {
 	auto scene = Scene::create();
-	auto layer = BattleScene::create();
+	auto layer = BattleScene::create(state, ai);
 	scene->addChild(layer);
 	return scene;
 }
 
-bool BattleScene::init()
+bool BattleScene::init(const tb::State& state, EnumAi ai)
 {
 	if (!Layer::init()) {
 		return false;
@@ -80,62 +86,48 @@ bool BattleScene::init()
 
 	/*** Game ***/
 
-	// Make state
-	std::vector<tb::Unit*> units;
+	_boardWidth = state.getWidth();
+	_boardHeight = state.getHeight();
 
-	// player 0
-	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 0,
-				boardgame::Point(0, 0)));
-	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
-				boardgame::Point(0, 1)));
-	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 0,
-				boardgame::Point(0, 2)));
-
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
-				boardgame::Point(2, 1)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
-				boardgame::Point(2, 2)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
-				boardgame::Point(2, 3)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 0,
-				boardgame::Point(2, 4)));
-
-	// player 2
-	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
-				boardgame::Point(8, 2)));
-	units.push_back(new tb::UnitRanged(3, 90, 40, 4 ,5, 3, 7, 1,
-				boardgame::Point(8, 3)));
-	units.push_back(new tb::UnitRanged(4, 90, 40, 4 ,5, 3, 7, 1,
-				boardgame::Point(8, 4)));
-
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(6, 0)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(6, 1)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(6, 2)));
-	units.push_back(new tb::Unit(0, 130, 50, 4 ,5, 4, 8, 1,
-				boardgame::Point(6, 3)));
-
-	// make rocks
-	std::vector<tb::Floor> rocks;
-	tb::Floor::collectRocks(&rocks, _boardWidth, _boardHeight, 4, 3);
-
-	auto state_p = new tb::State(2, _boardWidth, _boardHeight, units, rocks);
+	// copy
+	auto state_p = new tb::State(state);
 
 	// Make tree
 	_root = new boardgame::Tree<tb::State>(
 			state_p, &_game);
 
-	_game.playerAddHuman();
-	_game.playerAddAi(1);
+	/*** Set ai ***/
+
+	switch (ai) {
+	case EnumAi::HUMAN_VS_AI:
+		_game.playerAddHuman();
+		_game.playerAddAi(2);
+		break;
+	case EnumAi::AI_VS_AI:
+		_game.playerAddAi(2);
+		_game.playerAddAi(2);
+		break;
+	case EnumAi::HUMAN_VS_HUMAN:
+		_game.playerAddHuman();
+		_game.playerAddHuman();
+		break;
+	}
+
 
 	/*** Bg ***/
 
 	Sprite* spriteBg = Sprite::create("bg.jpg");
-	spriteBg->setPosition(size / 2);
+	spriteBg->setPosition(Vec2(
+			size.width / 2,
+			size.height / 2 + UI_HEIGHT));
 	this->addChild(spriteBg, static_cast<int>(Z::BG));
 
+	// ui
+	Sprite* spriteUiBg = Sprite::create("battle_ui_bg.png");
+	spriteUiBg->setPosition(Vec2(
+			size.width / 2,
+			UI_HEIGHT / 2));
+	this->addChild(spriteUiBg, static_cast<int>(Z::UI_BG));
 
 	/*** Edge ***/
 
@@ -153,24 +145,19 @@ bool BattleScene::init()
 
 	/*** Units ***/
 
-	for (auto unit_p : units) {
+	for (auto unit_p : state_p->getListUnitp()) {
 		Sprite* spriteUnit_p;
 
 		switch (unit_p->getId()) {
 		case 0:
-			spriteUnit_p = Sprite::create("melee.png");
-			break;
-		case 1:
-			spriteUnit_p = Sprite::create("melee2.png");
-			break;
-		case 2:
-			spriteUnit_p = Sprite::create("melee3.png");
+			spriteUnit_p = Sprite::create("img/unit/frog.png");
+//			spriteUnit_p = Sprite::create("unit/dog.png");
 			break;
 		case 3:
-			spriteUnit_p = Sprite::create("range.png");
+			spriteUnit_p = Sprite::create("img/unit/eye.png");
 			break;
 		case 4:
-			spriteUnit_p = Sprite::create("range2.png");
+			spriteUnit_p = Sprite::create("img/unit/skelton.png");
 			break;
 		}
 
@@ -180,7 +167,7 @@ bool BattleScene::init()
 
 		spriteUnit_p->setPosition(this->getPosition(unit_p->getPos()));
 		spriteUnit_p->setCascadeOpacityEnabled(true); // Apply child to opacity
-		this->addChild(spriteUnit_p, static_cast<int>(Z::UNIT)); // XXX 縺｡繧�繧薙→縲�x older 繧剃ｽｿ逕ｨ縺吶ｋ縺薙→
+		this->addChild(spriteUnit_p, static_cast<int>(Z::UNIT));
 		_listSpritesUnit.pushBack(spriteUnit_p); // PUSH
 
 		/*** Hp ***/
@@ -193,7 +180,7 @@ bool BattleScene::init()
 	}
 
 	// place object
-	for (tb::Floor rock : rocks) {
+	for (tb::Floor rock : state.getListFloor()) {
 		Sprite* spriteRock = Sprite::create("obj_rock.png");
 		spriteRock->setPosition(getPosition(rock.getPos()));
 		this->addChild(spriteRock, static_cast<int>(Z::OBJ));
@@ -311,7 +298,8 @@ void BattleScene::makeButton(boardgame::Tree<tb::State>* tree_p)
 
 	/* cursol */
 
-	Sprite* sActive = Sprite::create("target.png");
+	Sprite* sActive = Sprite::create("active.png");
+//	Sprite* sActive = Sprite::create("active.png");
 	sActive->setPosition(addVec2Y(
 			getPosition(pActive), TARGET_ADD_Y));
 	this->addChild(sActive, static_cast<int>(Z::CURSOR));
@@ -324,9 +312,46 @@ void BattleScene::makeButton(boardgame::Tree<tb::State>* tree_p)
 					RotateTo::create(1, Vec3(0, 360, 0)),
 					NULL)));
 
+	makeButtonWait(tree_p);
 	makeButtonMove(tree_p);
 	makeButtonAttackMelee(tree_p);
 	makeButtonAttackRange(tree_p);
+}
+
+void BattleScene::makeButtonWait(boardgame::Tree<tb::State>* tree_p)
+{
+	log("%s", __func__);
+
+	for (auto child_p : *(tree_p->force())) {
+		auto cast = dynamic_cast<tb::ActionWait*>(child_p->getAction_p());
+
+		if (cast != nullptr) {
+			Sprite* sButtonWait = Sprite::create("battle_pass.png");
+			sButtonWait->setPosition(UI_HEIGHT / 2 + UI_LEFT_MARGIN, UI_HEIGHT / 2);
+			this->addChild(sButtonWait, static_cast<int>(Z::UI));
+			_listButtons.pushBack(sButtonWait);
+
+			// event
+			auto listener_p = EventListenerTouchOneByOne::create();
+			listener_p->setSwallowTouches(true);
+
+			listener_p->onTouchBegan = [=] (Touch* touch, Event* event)
+			{
+				auto target = event->getCurrentTarget();
+
+				if (target->getBoundingBox().containsPoint(
+						touch->getLocation()))
+				{
+					this->executeAction(child_p);
+				}
+
+				return false;
+			};
+
+			this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(
+					listener_p, sButtonWait);
+		}
+	}
 }
 
 void BattleScene::makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p)
@@ -339,7 +364,7 @@ void BattleScene::makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p)
 
 			/*** Target cursol ***/
 
-			Sprite* sTarget = Sprite::create("from.png");
+			Sprite* sTarget = Sprite::create("target.png");
 			sTarget->setPosition(addVec2Y(getPosition(cast->getPosTarget()),
 					TARGET_ADD_Y));
 			this->addChild(sTarget, static_cast<int>(Z::CURSOR));
@@ -423,7 +448,6 @@ void BattleScene::makeButtonMove(boardgame::Tree<tb::State>* tree_p)
 					this->executeAction(child_p);
 				}
 
-				// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 				return false;
 				};
 
@@ -461,7 +485,7 @@ void BattleScene::makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p)
 
 		/*** Target cursol ***/
 
-		Sprite* sTarget = Sprite::create("from.png");
+		Sprite* sTarget = Sprite::create("target.png");
 		sTarget->setPosition(addVec2Y(getPosition(pTarget),
 				TARGET_ADD_Y));
 		this->addChild(sTarget, static_cast<int>(Z::CURSOR));
@@ -496,7 +520,6 @@ void BattleScene::makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p)
 				this->makeButtonAttackMeleeExecute(branches);
 			}
 
-			// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 			return false;
 		};
 
@@ -524,7 +547,7 @@ void BattleScene::makeButtonAttackMeleeExecute(
 
 		/*** Make button ***/
 
-		Sprite* sTarget = Sprite::create("attack_x2.png");
+		Sprite* sTarget = Sprite::create("attack.png");
 		sTarget->setPosition(getPosition(from));
 		this->addChild(sTarget, static_cast<int>(Z::FLOOR_SIGN));
 		_listButtons.pushBack(sTarget);	// PUSH
@@ -544,7 +567,6 @@ void BattleScene::makeButtonAttackMeleeExecute(
 				this->executeAction(tree_p);
 			}
 
-			// 莉･髯阪�ｮ繧､繝吶Φ繝医ｒ蜃ｦ逅�縺励↑縺�
 			return false;
 		};
 
@@ -566,6 +588,13 @@ void BattleScene::executeAction(boardgame::Tree<tb::State>* tree_p)
 		auto cast = dynamic_cast<tb::ActionMove*>(action_p);
 		mainAnimationMove(tree_p, cast->getUnitIndex(),
 				cast->getPath());
+	}
+	// ActionWait
+	else if (dynamic_cast<tb::ActionWait*>(action_p) != nullptr) {
+		auto cast = dynamic_cast<tb::ActionWait*>(action_p);
+
+		// todo
+		hundleTree(tree_p);
 	}
 	// ActionAttackMelee
 	else if (dynamic_cast<tb::ActionAttackMelee*>(action_p) != nullptr) {
@@ -678,7 +707,13 @@ void BattleScene::mainAnimationRange(boardgame::Tree<tb::State>* tree_p,
 			const boardgame::Point pTarget)
 {
 	Sprite* arrow = Sprite::create("arrow.png");
-	arrow->setFlippedX(true);
+//	arrow->setFlippedX(true);
+	arrow->setRotation(
+			90 - reu::diagram::degree(
+					pFrom.getX(),
+					pFrom.getY(),
+					pTarget.getX(),
+					pTarget.getY()));
 	arrow->setPosition(
 			this->getPosition(pFrom));
 	this->addChild(arrow);

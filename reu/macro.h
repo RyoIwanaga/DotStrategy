@@ -34,9 +34,6 @@ public:		virtual const type& get##fnName() const {return var;}
 #define REU__NEWLINE \
 	std::cout << std::endl
 
-#define REU__PRINTLN(str) \
-	std::cout << str << std::endl
-
 /* DEBUG */
 
 #define REU_DEBUG__SENTENCE(type, var, sentence)	\

@@ -4,6 +4,7 @@
 // libs
 #include "../../reu/reu.h"
 #include "../../boardgame/BoardGame.h"
+#include "../../db/sqlite3.h"
 
 // c header
 #include <stdio.h>

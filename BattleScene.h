@@ -24,15 +24,35 @@ class BattleScene : public cocos2d::Layer
 	CC_SYNTHESIZE(boardgame::Tree<tb::State>*, _root, Root);
 
 public:
-	CREATE_FUNC(BattleScene);
-	static cocos2d::Scene* createScene();
+	enum class EnumAi {
+		HUMAN_VS_HUMAN,
+		HUMAN_VS_AI,
+		AI_VS_AI,
+	};
+
+	bool init(const tb::State& state, EnumAi ai);
+
+	static BattleScene* create(const tb::State& state, EnumAi ai)
+	{
+		auto* pRet = new BattleScene();
+		if (pRet && pRet->init(state, ai))
+		{
+			pRet->autorelease();
+			return pRet; \
+		}
+		else
+		{
+			delete pRet;
+			pRet = NULL;
+			return NULL;
+		}
+	}
+	static cocos2d::Scene* createScene(const tb::State& state, EnumAi ai);
 
 protected:
 	BattleScene();
 	virtual ~BattleScene();
-	bool init() override;
 
-private:
 	/*** Convert boardgame::Position to cocos2d::Vec2 ***/
 
 	cocos2d::Vec2 getPosition(int x, int y);
@@ -54,6 +74,7 @@ private:
 	/*** Make button ***/
 
 	void makeButton(boardgame::Tree<tb::State>* tree_p);
+	void makeButtonWait(boardgame::Tree<tb::State>* tree_p);
 	void makeButtonMove(boardgame::Tree<tb::State>* tree_p);
 	void makeButtonAttackRange(boardgame::Tree<tb::State>* tree_p);
 	void makeButtonAttackMelee(boardgame::Tree<tb::State>* tree_p);

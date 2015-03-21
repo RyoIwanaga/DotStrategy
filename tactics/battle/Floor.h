@@ -26,6 +26,9 @@ class Floor
 		_pos.print();
 	}
 
+	/** Make new rocks.
+	 *  guard 2 floor from left and right.
+	 */
 	static bool collectRocks(std::vector<Floor>* result_p, 
 			int width, int height, int max, int guard = 2);
 };
